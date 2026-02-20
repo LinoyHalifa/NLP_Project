@@ -13,8 +13,8 @@ from bert_score import score as bertscore
 # ======================================================
 # CONFIG
 # ======================================================
-CHUNK_SIZE = 9000
-OUTPUT_FILE = "neutralization_evaluation_refined.csv"
+CHUNK_SIZE = 2000
+OUTPUT_FILE = "neutralization_evaluation.csv"
 
 # ======================================================
 # 1. Load environment (.env)
@@ -68,7 +68,7 @@ if os.path.exists(OUTPUT_FILE):
 else:
     print("Starting from scratch...")
     df = pd.read_csv(
-        r"D:\MS.c\MS.c\Yehudit\Clickbait_Detection_Project\ClickbaitTacticsDetection\evaluation\low_only_retry_input.csv"
+        r"D:\MS.c\MS.c\Yehudit\Clickbait_Detection_Project\ClickbaitTacticsDetection\Dataset_generation\clickbait_generated_train_val.csv"
     )
 
 # Ensure required columns exist
@@ -94,29 +94,13 @@ print(f"Neutralizing {len(to_neutralize)} headlines...")
 
 for idx, row in tqdm(to_neutralize.iterrows(), total=len(to_neutralize)):
     prompt = f"""
-    Rewrite the clickbait headline back into its original neutral form.
+    Rewrite the following clickbait headline into a neutral, factual headline.
+    Do NOT add new information. Preserve the original meaning.
+    Use lowercase letters only.
+    Do NOT use quotation marks
 
-Your goal is to reverse the clickbait transformation and recover
-the original neutral headline as accurately as possible.
-
-Requirements:
-- Preserve the original meaning exactly.
-- If possible, return a neutral headline that is identical or nearly identical to the original headline.
-- Do NOT add new information.
-- Do NOT improve or embellish the wording.
-- Remove emotional, sensational, or misleading clickbait phrasing only if it exists.
-
-Formatting rules:
-- Use lowercase letters only.
-- Do NOT use quotation marks.
-
-Original headline:
-"{row['original']}"
-
-Clickbait headline:
-"{row['clickbait']}"
-
-Recovered neutral headline:
+    Clickbait: "{row['clickbait']}"
+    Neutral headline:
     """
 
     neutral = ask_gpt(prompt)
