@@ -1,275 +1,104 @@
-NLP Project Name: Beyond Binary Clickbait Detection: Tactic-Level Attribution for Explainable Headline Analysis
+---
 
-📌 Project Overview
+# 📝 Beyond Binary Clickbait Detection
 
-This project presents a two-stage Natural Language Processing (NLP) framework for:
+### Tactic-Level Attribution for Explainable Headline Analysis
 
-Binary Clickbait Detection – Classifying whether a headline is clickbait or non-clickbait.
+---
 
-Tactic Attribution – Identifying which rhetorical clickbait tactics are used in a headline (multi-label classification, up to 3 tactics per headline).
+## 🎯 Project Overview
 
-The project combines:
+This project introduces a **two-stage NLP framework** designed to move beyond simple clickbait classification. While most systems stop at "Is this clickbait?", this framework identifies the **specific rhetorical tactics** used to manipulate readers, providing a layer of explainability to headline analysis.
 
-Real news headlines
+### Key Features
 
-Synthetic clickbait generation using GPT
+* **Binary Classification:** High-accuracy detection of clickbait vs. non-clickbait.
+* **Tactic Attribution:** Multi-label classification identifying up to 3 rhetorical tactics per headline.
+* **Hybrid Dataset:** Combines real-world news with high-quality synthetic clickbait generated via GPT-4o.
+* **Benchmarking:** A direct head-to-head comparison between **Fine-tuned BERT** and **State-of-the-Art LLMs** (Zero-shot & Few-shot).
 
-Supervised fine-tuning of BERT
+---
 
-Zero-shot and Few-shot evaluation using GPT and Gemini models
+## 🧠 The 10-Tactic Taxonomy
 
-The goal is to compare supervised learning (BERT) against large language models (LLMs) under zero-shot and few-shot settings.
+Each clickbait headline is analyzed through 10 distinct rhetorical lenses:
 
-📂 Data Sources
-1️⃣ Kaggle Dataset (Real Headlines Only)
+| Tactic | Description |
+| --- | --- |
+| **Curiosity Gap** | Withholding crucial information to force a click. |
+| **Exaggeration** | Overpromising the significance of the content. |
+| **Emotional Triggers** | Leveraging fear, joy, or anger. |
+| **Sensationalism** | Using shocking language for mundane facts. |
+| **Lists / Superlatives** | "10 things you won't believe..." |
+| **Ambiguous Refs** | Using "This" or "He/She" without context. |
+| **Direct Appeals** | Explicitly telling the user to "Click here" or "Watch". |
+| **Unfinished Narratives** | Starting a story and cutting it off. |
+| **Unexpected Assoc.** | Linking two unrelated topics for shock value. |
+| **Provocative Qs** | Questions where the answer is usually "No". |
 
-Dataset:
-https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset
+---
 
-From this dataset:
+## 🏗 System Architecture
 
-Only the real news headlines were used.
+The pipeline is divided into four distinct phases:
 
-Fake headlines were discarded.
+### 1. Data Engineering
 
-2️⃣ Additional News Dataset
+* **Sources:** Kaggle (Real News) + Merged news_data.csv.
+* **Synthetic Generation:** GPT-4o controlled prompting to create multi-label clickbait (1-3 tactics per sample).
+* **Integrity:** Strict 80/20 split **before** generation to prevent data leakage.
 
-news_data.csv
+### 2. Supervised Learning (BERT)
 
-Merged with Kaggle real headlines.
+* **Stage 1:** Binary Classifier (Clickbait vs. Real).
+* **Stage 2:** Multi-label Tactic Predictor (Sigmoid output layer).
+* **Training:** Fine-tuned on 85% of the training set with 15% validation.
 
-Duplicate headlines were removed.
+### 3. LLM Benchmarking
 
-🧹 Data Preprocessing
+* **Models:** GPT-4o, Gemini 2.5.
+* **Settings:** Zero-shot (no examples) vs. Few-shot (context-aware).
+* **Evaluation:** Tested on the exact same 20% held-out test set as BERT.
 
-Merged datasets into a unified dataset.
+---
 
-Removed duplicate headlines.
+## 📊 Evaluation Metrics
 
-Split the dataset:
+To ensure a fair comparison, we use a robust set of metrics:
 
-80% Training + Validation
+* **Binary:** Accuracy, Precision, Recall, F1-Score.
+* **Multi-label:** * **Macro/Micro F1:** Overall tactic performance.
+* **Exact Match Ratio:** How often the model got *all* tactics right.
+* **Per-class F1:** Identifying which tactics are "hardest" to detect.
 
-20% Test
 
-Prevented data leakage by splitting before synthetic clickbait generation.
 
-🤖 Synthetic Clickbait Generation
+---
 
-Clickbait headlines were generated using GPT-4o with controlled tactic prompting.
+## 🛠 Tech Stack
 
-Generation Constraints:
+* **Core:** Python, Pandas, NumPy, Scikit-learn.
+* **Deep Learning:** PyTorch, HuggingFace Transformers.
+* **Models:** BERT-base-uncased.
+* **APIs:** OpenAI (GPT-4o), Google AI (Gemini).
 
-Each synthetic headline could include up to 3 clickbait tactics
+---
 
-Minimum: 1 tactic
+## 🚀 Future Roadmap
 
-Maximum: 3 tactics
+* [ ] **Calibration:** Improve probability thresholds for tactic attribution.
+* [ ] **Extended Taxonomy:** Add visual-based clickbait detection (Image+Text).
+* [ ] **Contrastive Learning:** Explore if SimCLR/CLIP can improve feature representation.
+* [ ] **Explainability:** Map BERT's attention heads to the specific tactics identified.
 
-This ensured:
+---
 
-Multi-label structure
+## 📄 License
 
-Realistic rhetorical combinations
+This project is for academic research purposes. Data sources belong to their respective owners.
 
-Controlled tactic attribution
+---
 
-The generated file:
+**Developed as part of the M.Sc in Intelligent Systems & AI @ Afeka College.**
 
-ClickBait_generated.csv
-🧠 Clickbait Tactics (10 Labels)
-
-The project includes 10 rhetorical clickbait tactics:
-
-Curiosity Gap
-
-Exaggeration
-
-Emotional Triggers
-
-Sensationalism
-
-Lists / Superlatives
-
-Ambiguous References
-
-Direct Appeals
-
-Unfinished Narratives
-
-Unexpected Associations
-
-Provocative Questions
-
-Each clickbait headline may contain 1–3 tactics.
-
-🏗 Model Training
-Stage 1: BERT – Binary Classification
-
-Task:
-Classify headline as:
-
-Clickbait
-
-Non-clickbait
-
-Data Split (within training set):
-
-85% Training
-
-15% Validation
-
-Evaluation performed on the held-out 20% test set.
-
-Stage 2: BERT – Multi-Label Tactic Attribution
-
-Task:
-Predict which of the 10 tactics appear in the headline.
-
-Multi-label classification
-
-Sigmoid output layer
-
-Same 85% / 15% training-validation split
-
-Tested on the same 20% held-out test set
-
-🔍 LLM Evaluation (Zero-shot & Few-shot)
-
-The same held-out test set was evaluated using:
-
-GPT (Few-shot & Zero-shot)
-
-Tasks:
-
-Binary clickbait detection
-
-Multi-label tactic attribution
-
-Gemini 2.5 (Few-shot & Zero-shot)
-
-Tasks:
-
-Binary clickbait detection
-
-Multi-label tactic attribution
-
-This allows direct comparison between:
-
-Fine-tuned supervised model (BERT)
-
-Large language models without training (zero-shot)
-
-LLMs with minimal guidance (few-shot)
-
-📊 Evaluation Strategy
-
-Evaluation was performed on the same test file for all models.
-
-Binary Classification Metrics:
-
-Accuracy
-
-Precision
-
-Recall
-
-F1-score
-
-Multi-label Tactic Metrics:
-
-Macro F1
-
-Micro F1
-
-Per-class F1
-
-Exact match accuracy
-
-🧩 Full Pipeline Summary
-
-Collect real headlines (Kaggle + additional dataset)
-
-Remove duplicates
-
-Split 80/20 (train+val / test)
-
-Generate synthetic clickbait with GPT (max 3 tactics per headline)
-
-Train BERT (binary)
-
-Train BERT (multi-label tactics)
-
-Evaluate BERT on test set
-
-Run GPT (zero-shot & few-shot) on same test set
-
-Run Gemini (zero-shot & few-shot) on same test set
-
-Compare performance across all systems
-
-🎯 Research Contribution
-
-This project provides:
-
-A controlled synthetic clickbait generation framework
-
-A 10-tactic multi-label taxonomy
-
-Direct comparison between:
-
-Supervised fine-tuned models
-
-Zero-shot LLMs
-
-Few-shot LLMs
-
-Analysis of tactic-level attribution behavior across models
-
-It demonstrates the strengths and limitations of:
-
-Fine-tuned transformer classifiers
-
-Prompt-based reasoning in LLMs
-
-Multi-label rhetorical modeling
-
-🛠 Technologies Used
-
-Python
-
-PyTorch
-
-HuggingFace Transformers
-
-BERT
-
-GPT-4o
-
-Gemini 2.5
-
-Pandas / NumPy / Sklearn
-
-🚀 Future Work
-
-Improve tactic-level calibration
-
-Expand tactic taxonomy
-
-Explore contrastive learning
-
-Investigate explainability alignment between BERT and LLM reasoning
-
-If you'd like, I can also:
-
-Write an academic-style version (for thesis submission)
-
-Write a short GitHub-friendly version
-
-Add architecture diagrams section
-
-Add reproducibility instructions (requirements.txt, environment setup)
-
-Add results table template
-
-Just tell me which format you need.
+**
