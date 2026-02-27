@@ -97,7 +97,6 @@ To ensure a fair comparison, we use a robust set of metrics:
 
 This project is for academic research purposes. Data sources belong to their respective owners.
 
----
 
 **Developed as part of the M.Sc in Intelligent Systems & AI @ Afeka College.**
 
